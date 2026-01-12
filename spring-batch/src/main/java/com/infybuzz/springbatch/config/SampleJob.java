@@ -2,6 +2,7 @@ package com.infybuzz.springbatch.config;
 
 import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.job.parameters.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -26,6 +27,7 @@ public class SampleJob {
 	@Bean
 	Job fistJob() {
 		return new JobBuilder("First job", jobRepository)
+			.incrementer(new RunIdIncrementer())
 			.start(firstStep())
 			.next(secondStep())
 			.build();
