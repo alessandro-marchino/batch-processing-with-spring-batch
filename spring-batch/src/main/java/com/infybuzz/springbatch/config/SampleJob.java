@@ -9,6 +9,7 @@ import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.infybuzz.springbatch.listener.FirstJobListener;
 import com.infybuzz.springbatch.service.FirstTasklet;
 import com.infybuzz.springbatch.service.SecondTasklet;
 
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SampleJob {
 
 	private final JobRepository jobRepository;
+	private final FirstJobListener firstJobListener;
 	private final FirstTasklet firstTasklet;
 	private final SecondTasklet secondTasklet;
 
@@ -30,6 +32,7 @@ public class SampleJob {
 			.incrementer(new RunIdIncrementer())
 			.start(firstStep())
 			.next(secondStep())
+			.listener(firstJobListener)
 			.build();
 	}
 

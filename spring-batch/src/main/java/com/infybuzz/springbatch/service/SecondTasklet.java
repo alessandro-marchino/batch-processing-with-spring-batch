@@ -16,6 +16,7 @@ public class SecondTasklet implements Tasklet {
 	@Override
 	public @Nullable RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 		log.info("This is the second tasklet step");
+		log.info("Job Execution Context: {}", chunkContext.getStepContext().getJobExecutionContext());
 		return RepeatStatus.FINISHED;
 	}
 }
