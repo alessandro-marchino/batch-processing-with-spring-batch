@@ -13,6 +13,9 @@ import org.springframework.batch.infrastructure.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.infybuzz.springbatch.service.FirstTasklet;
+import com.infybuzz.springbatch.service.SecondTasklet;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,6 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 public class SampleJob {
 
 	private final JobRepository jobRepository;
+	private final FirstTasklet firstTasklet;
+	private final SecondTasklet secondTasklet;
 
 	@Bean
 	Job fistJob() {
@@ -33,32 +38,13 @@ public class SampleJob {
 
 	private Step firstStep() {
 		return new StepBuilder("First step", jobRepository)
-			.tasklet(firstTask())
+			.tasklet(firstTasklet)
 			.build();
-	}
-
-	private Tasklet firstTask() {
-		return new Tasklet() {
-			@Override
-			public @Nullable RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-				log.info("This is the first tasklet step");
-				return RepeatStatus.FINISHED;
-			}
-		};
 	}
 
 	private Step secondStep() {
 		return new StepBuilder("Second step", jobRepository)
-			.tasklet(secondTask())
+			.tasklet(secondTasklet)
 			.build();
-	}
-	private Tasklet secondTask() {
-		return new Tasklet() {
-			@Override
-			public @Nullable RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-				log.info("This is the second tasklet step");
-				return RepeatStatus.FINISHED;
-			}
-		};
 	}
 }
