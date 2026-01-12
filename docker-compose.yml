@@ -1,0 +1,18 @@
+services:
+  mysql:
+    image: mysql:8.0.25
+    environment:
+      MYSQL_DATABASE: springbatch
+      MYSQL_USER: springbatch
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: mypass
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./files/mysql-8:/docker-entrypoint-initdb.d
+    cap_add:
+      - SYS_NICE
+
+volumes:
+  mysql_data:
