@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.infybuzz.springbatch.listener.FirstJobListener;
+import com.infybuzz.springbatch.listener.FirstStepListener;
 import com.infybuzz.springbatch.service.FirstTasklet;
 import com.infybuzz.springbatch.service.SecondTasklet;
 
@@ -23,6 +24,7 @@ public class SampleJob {
 
 	private final JobRepository jobRepository;
 	private final FirstJobListener firstJobListener;
+	private final FirstStepListener firstStepListener;
 	private final FirstTasklet firstTasklet;
 	private final SecondTasklet secondTasklet;
 
@@ -39,6 +41,7 @@ public class SampleJob {
 	private Step firstStep() {
 		return new StepBuilder("First step", jobRepository)
 			.tasklet(firstTasklet)
+			.listener(firstStepListener)
 			.build();
 	}
 
