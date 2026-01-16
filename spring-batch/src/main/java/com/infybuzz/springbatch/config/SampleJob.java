@@ -16,6 +16,7 @@ import com.infybuzz.springbatch.reader.FirstItemReader;
 import com.infybuzz.springbatch.service.FirstTasklet;
 import com.infybuzz.springbatch.service.SecondTasklet;
 import com.infybuzz.springbatch.writer.FirstItemWriter;
+import com.infybuzz.springbatch.writer.SecondItemWriter;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,7 @@ public class SampleJob {
 	private final FirstItemReader firstItemReader;
 	private final FirstItemProcessor firstItemProcessor;
 	private final FirstItemWriter firstItemWriter;
+	private final SecondItemWriter secondItemWriter;
 
 	// @Bean
 	Job fistJob() {
@@ -66,6 +68,7 @@ public class SampleJob {
 		return new JobBuilder("Second job", jobRepository)
 			.incrementer(new RunIdIncrementer())
 			.start(firstChunkStep())
+			.next(secondChunkStep())
 			.build();
 	}
 
@@ -75,6 +78,14 @@ public class SampleJob {
 			.reader(firstItemReader)
 			.processor(firstItemProcessor)
 			.writer(firstItemWriter)
+			.build();
+	}
+
+	private Step secondChunkStep() {
+		return new StepBuilder("Second chunk step", jobRepository)
+			.<Integer, Integer>chunk(3)
+			.reader(firstItemReader)
+			.writer(secondItemWriter)
 			.build();
 	}
 }
