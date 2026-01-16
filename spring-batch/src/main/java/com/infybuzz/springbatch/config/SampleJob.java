@@ -69,6 +69,7 @@ public class SampleJob {
 			.incrementer(new RunIdIncrementer())
 			.start(firstChunkStep())
 			.next(secondChunkStep())
+			.next(secondStep())
 			.build();
 	}
 
