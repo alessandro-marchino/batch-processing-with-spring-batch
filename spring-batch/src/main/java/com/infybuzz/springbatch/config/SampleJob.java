@@ -28,7 +28,7 @@ public class SampleJob {
 	private final FirstTasklet firstTasklet;
 	private final SecondTasklet secondTasklet;
 
-	@Bean
+	// @Bean
 	Job fistJob() {
 		return new JobBuilder("First job", jobRepository)
 			.incrementer(new RunIdIncrementer())
@@ -48,6 +48,14 @@ public class SampleJob {
 	private Step secondStep() {
 		return new StepBuilder("Second step", jobRepository)
 			.tasklet(secondTasklet)
+			.build();
+	}
+
+	@Bean
+	Job secondJob() {
+		return new JobBuilder("Second job", jobRepository)
+			.incrementer(new RunIdIncrementer())
+			.start((Step)null)
 			.build();
 	}
 }
