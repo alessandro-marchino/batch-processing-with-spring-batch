@@ -23,10 +23,14 @@ import lombok.extern.slf4j.Slf4j;
 public class SampleJob {
 
 	private final JobRepository jobRepository;
+
+	// First job
 	private final FirstJobListener firstJobListener;
 	private final FirstStepListener firstStepListener;
 	private final FirstTasklet firstTasklet;
 	private final SecondTasklet secondTasklet;
+
+	// Second job
 
 	// @Bean
 	Job fistJob() {
