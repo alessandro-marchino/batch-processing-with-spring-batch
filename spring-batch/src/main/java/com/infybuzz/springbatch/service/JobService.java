@@ -11,6 +11,7 @@ import org.springframework.batch.core.job.JobExecutionException;
 import org.springframework.batch.core.job.parameters.JobParameter;
 import org.springframework.batch.core.job.parameters.JobParameters;
 import org.springframework.batch.core.launch.JobOperator;
+import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 public class JobService {
 	private final JobOperator jobOperator;
 	private final JobRegistry jobRegistry;
+	private final JobRepository jobRepository;
 
 	@Async
 	public void startJob(String jobName, List<JobParamRequest> jobParamRequests) {
@@ -43,5 +45,9 @@ public class JobService {
 		} catch (JobExecutionException e) {
 			log.error("Exception while running job", e);
 		}
+	}
+
+	public JobExecution getJobExecutionById(long jobExecutionId) {
+		return jobRepository.getJobExecution(jobExecutionId);
 	}
 }

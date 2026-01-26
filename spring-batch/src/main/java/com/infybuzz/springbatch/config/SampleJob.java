@@ -8,6 +8,7 @@ import org.springframework.batch.core.job.parameters.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -48,7 +49,7 @@ public class SampleJob {
 	}
 
 	@Bean
-	Job fistJob() {
+	Job firstJob() {
 		return new JobBuilder("First job", jobRepository)
 			.incrementer(new RunIdIncrementer())
 			.start(firstStep())
@@ -94,6 +95,19 @@ public class SampleJob {
 			.<Integer, Integer>chunk(3)
 			.reader(firstItemReader)
 			.writer(secondItemWriter)
+			.build();
+	}
+
+	@Bean
+	Job thirdJob() {
+		return new JobBuilder("Third job", jobRepository)
+			.start(new StepBuilder("First step", jobRepository)
+				.tasklet((contribution, context) -> {
+					// Sleep 10 seconds
+					Thread.sleep(10000);
+					return null;
+				})
+				.build())
 			.build();
 	}
 }
