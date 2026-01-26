@@ -1,5 +1,7 @@
 package com.infybuzz.springbatch.config;
 
+import org.springframework.batch.core.configuration.JobRegistry;
+import org.springframework.batch.core.configuration.support.MapJobRegistry;
 import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.job.parameters.RunIdIncrementer;
@@ -39,6 +41,11 @@ public class SampleJob {
 	private final FirstItemProcessor firstItemProcessor;
 	private final FirstItemWriter firstItemWriter;
 	private final SecondItemWriter secondItemWriter;
+
+	@Bean
+	JobRegistry jobRegistry() throws Exception {
+		return new MapJobRegistry();
+	}
 
 	@Bean
 	Job fistJob() {
