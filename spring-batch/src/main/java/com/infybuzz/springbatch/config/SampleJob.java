@@ -40,7 +40,7 @@ public class SampleJob {
 	private final FirstItemWriter firstItemWriter;
 	private final SecondItemWriter secondItemWriter;
 
-	// @Bean
+	@Bean
 	Job fistJob() {
 		return new JobBuilder("First job", jobRepository)
 			.incrementer(new RunIdIncrementer())
