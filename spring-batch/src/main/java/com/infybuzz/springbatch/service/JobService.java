@@ -1,5 +1,7 @@
 package com.infybuzz.springbatch.service;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.batch.core.configuration.JobRegistry;
@@ -12,6 +14,8 @@ import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.infybuzz.springbatch.request.JobParamRequest;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,13 +27,16 @@ public class JobService {
 	private final JobRegistry jobRegistry;
 
 	@Async
-	public void startJob(String jobName) {
+	public void startJob(String jobName, List<JobParamRequest> jobParamRequests) {
 		Job job = jobRegistry.getJob(jobName);
 		if(job == null) {
 			log.error("Job {} not found", jobName);
 		}
-		JobParameter<Long> currentTime = new JobParameter<>("currentTime", System.currentTimeMillis(), Long.class);
-		JobParameters jobParameters = new JobParameters(Set.of(currentTime));
+		Set<JobParameter<?>> parameters = new HashSet<>();
+		parameters.add(new JobParameter<>("currentTime", System.currentTimeMillis(), Long.class));
+		jobParamRequests.forEach(jpr -> parameters.add(new JobParameter<>(jpr.getParamKey(), jpr.getParamValue(), String.class)));
+
+		JobParameters jobParameters = new JobParameters(parameters);
 		try {
 			JobExecution jobExecution = jobOperator.run(job, jobParameters);
 			log.info("Job for name \"{}\" is {} - execution id {} - instance id {}", jobName, job, jobExecution.getId(), jobExecution.getJobInstanceId());
