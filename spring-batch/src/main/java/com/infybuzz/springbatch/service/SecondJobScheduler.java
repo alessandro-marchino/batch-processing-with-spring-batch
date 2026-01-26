@@ -9,13 +9,11 @@ import org.springframework.batch.core.job.JobExecutionException;
 import org.springframework.batch.core.job.parameters.JobParameter;
 import org.springframework.batch.core.job.parameters.JobParameters;
 import org.springframework.batch.core.launch.JobOperator;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Service
+// @Service
 @RequiredArgsConstructor
 @Slf4j
 public class SecondJobScheduler {
@@ -23,7 +21,7 @@ public class SecondJobScheduler {
 	private final Job secondJob;
 	private final JobOperator jobOperator;
 
-	@Scheduled(cron = "0 0 * * * *")
+	// @Scheduled(cron = "0 0 * * * *")
 	public void secondJobStarter() {
 		Set<JobParameter<?>> parameters = new HashSet<>();
 		parameters.add(new JobParameter<>("currentTime", System.currentTimeMillis(), Long.class));

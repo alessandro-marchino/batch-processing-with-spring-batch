@@ -1,8 +1,5 @@
 package com.infybuzz.springbatch.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.infybuzz.springbatch.request.JobParamRequest;
 import com.infybuzz.springbatch.service.JobService;
 
@@ -20,9 +17,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
-@RestController
+// @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/job")
+// @RequestMapping("/api/job")
 @Slf4j
 public class JobController {
 
