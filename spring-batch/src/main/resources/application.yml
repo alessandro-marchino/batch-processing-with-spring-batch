@@ -4,6 +4,8 @@ spring:
     url: jdbc:mysql://localhost:3306/springbatch?useSSL=false&allowPublicKeyRetrieval=true
     username: springbatch
     password: password
+  main:
+    web-application-type: none
   batch:
     job:
       name: Chunk job
