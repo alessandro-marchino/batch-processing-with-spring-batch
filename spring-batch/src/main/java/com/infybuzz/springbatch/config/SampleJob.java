@@ -10,15 +10,12 @@ import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.infrastructure.item.ItemReader;
 import org.springframework.batch.infrastructure.item.file.FlatFileItemReader;
-import org.springframework.batch.infrastructure.item.file.LineMapper;
 import org.springframework.batch.infrastructure.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.infrastructure.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.infrastructure.item.file.transform.DelimitedLineTokenizer;
-import org.springframework.batch.infrastructure.item.file.transform.LineTokenizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 import com.infybuzz.springbatch.listener.FirstJobListener;
@@ -133,12 +130,12 @@ public class SampleJob {
 		return new StepBuilder("Chunk job first step", jobRepository)
 			.<StudentCsv, StudentCsv>chunk(3)
 			.reader(studentCsvFlatFileItemReader())
-			.writer(System.out::println)
+			.writer(chunk -> chunk.forEach(System.out::println))
 			.build();
 	}
 
 	private ItemReader<StudentCsv> studentCsvFlatFileItemReader() {
-		Resource resource = new ClassPathResource("classpath:/input-files/students.csv");
+		Resource resource = new ClassPathResource("/input-files/students.csv");
 		DefaultLineMapper<StudentCsv> lineMapper = new DefaultLineMapper<>();
 
 		DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer();
