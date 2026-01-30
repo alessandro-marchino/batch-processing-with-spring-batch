@@ -10,12 +10,10 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.infrastructure.item.file.FlatFileItemReader;
-import org.springframework.batch.infrastructure.item.file.mapping.BeanWrapperFieldSetMapper;
-import org.springframework.batch.infrastructure.item.file.mapping.DefaultLineMapper;
-import org.springframework.batch.infrastructure.item.file.transform.DelimitedLineTokenizer;
+import org.springframework.batch.infrastructure.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.infrastructure.item.json.JacksonJsonObjectReader;
 import org.springframework.batch.infrastructure.item.json.JsonItemReader;
-import org.springframework.batch.infrastructure.item.json.JsonObjectReader;
+import org.springframework.batch.infrastructure.item.json.builder.JsonItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -125,13 +123,14 @@ public class SampleJob {
 	@Bean
 	Job chunkJob() {
 		return new JobBuilder("Chunk job", jobRepository)
-			.incrementer(new RunIdIncrementer())
 			.start(chunkJobFirstStep())
 			.build();
 	}
 
 	private Step chunkJobFirstStep() {
 		return new StepBuilder("Chunk job first step", jobRepository)
+			// .<StudentCsv, StudentCsv>chunk(3)
+			// .reader(studentCsvFlatFileItemReader(null))
 			.<StudentJson, StudentJson>chunk(3)
 			.reader(studentJsonItemReader(null))
 			.writer(chunk -> {
@@ -144,27 +143,24 @@ public class SampleJob {
 	@Bean
 	@StepScope
 	FlatFileItemReader<StudentCsv> studentCsvFlatFileItemReader(@Value("#{jobParameters['inputFile']}") Resource resource) {
-		DefaultLineMapper<StudentCsv> lineMapper = new DefaultLineMapper<>();
-
-		DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer();
-		lineTokenizer.setDelimiter("|");
-		lineTokenizer.setNames("ID", "First Name", "Last Name", "Email");
-		lineMapper.setLineTokenizer(lineTokenizer);
-
-		BeanWrapperFieldSetMapper<StudentCsv> fieldSetMapper = new BeanWrapperFieldSetMapper<StudentCsv>();
-		fieldSetMapper.setTargetType(StudentCsv.class);
-		lineMapper.setFieldSetMapper(fieldSetMapper);
-
-		FlatFileItemReader<StudentCsv> itemReader = new FlatFileItemReader<>(resource, lineMapper);
-		itemReader.setLinesToSkip(1);
-		return itemReader;
+		return new FlatFileItemReaderBuilder<StudentCsv>()
+			.saveState(false)
+			.resource(resource)
+			.delimited(spec -> spec
+				.delimiter("|")
+				.names("ID", "First Name", "Last Name", "Email"))
+			.targetType(StudentCsv.class)
+			.linesToSkip(1)
+			.build();
 	}
 
 	@Bean
 	@StepScope
 	JsonItemReader<StudentJson> studentJsonItemReader(@Value("#{jobParameters['inputFile']}") Resource resource) {
-		JsonObjectReader<StudentJson> objectReader = new JacksonJsonObjectReader<>(StudentJson.class);
-		JsonItemReader<StudentJson> itemReader = new JsonItemReader<>(resource, objectReader);
-		return itemReader;
+		return new JsonItemReaderBuilder<StudentJson>()
+			.saveState(false)
+			.resource(resource)
+			.jsonObjectReader(new JacksonJsonObjectReader<>(StudentJson.class))
+			.build();
 	}
 }

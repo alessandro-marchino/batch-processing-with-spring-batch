@@ -1,15 +1,36 @@
 {
     "configurations": [
-
         {
             "type": "java",
-            "name": "Spring Boot-SpringBatchApplication<spring-batch>",
+            "name": "Spring Boot-SpringBatchApplication<spring-batch> - CSV",
             "request": "launch",
             "cwd": "${workspaceFolder}",
             "mainClass": "com.infybuzz.springbatch.SpringBatchApplication",
             "projectName": "spring-batch",
-            "args": "inputFile=classpath:/input-files/students.csv",
+            "args": "timestamp=${input:timestamp} inputFile=classpath:/input-files/students.csv",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-SpringBatchApplication<spring-batch> - JSON",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.infybuzz.springbatch.SpringBatchApplication",
+            "projectName": "spring-batch",
+            "args": "timestamp=${input:timestamp} inputFile=classpath:/input-files/students.json",
             "envFile": "${workspaceFolder}/.env"
         }
+    ],
+    "inputs": [
+      {
+        "id": "timestamp",
+        "type": "command",
+        "command": "shellCommand.execute",
+        "args": {
+          "command": "date +%Y-%m-%d'T'%H:%M:%S",
+          "cwd": "${workspaceFolder}",
+          "useSingleResult": true
+        }
+      }
     ]
 }
