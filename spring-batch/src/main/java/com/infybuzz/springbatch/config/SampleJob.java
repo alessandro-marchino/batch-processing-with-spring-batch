@@ -139,6 +139,7 @@ public class SampleJob {
 		DefaultLineMapper<StudentCsv> lineMapper = new DefaultLineMapper<>();
 
 		DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer();
+		lineTokenizer.setDelimiter("|");
 		lineTokenizer.setNames("ID", "First Name", "Last Name", "Email");
 		lineMapper.setLineTokenizer(lineTokenizer);
 
