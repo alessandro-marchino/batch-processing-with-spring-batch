@@ -14,15 +14,19 @@ import org.springframework.batch.infrastructure.item.file.builder.FlatFileItemRe
 import org.springframework.batch.infrastructure.item.json.JacksonJsonObjectReader;
 import org.springframework.batch.infrastructure.item.json.JsonItemReader;
 import org.springframework.batch.infrastructure.item.json.builder.JsonItemReaderBuilder;
+import org.springframework.batch.infrastructure.item.xml.StaxEventItemReader;
+import org.springframework.batch.infrastructure.item.xml.builder.StaxEventItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import com.infybuzz.springbatch.listener.FirstJobListener;
 import com.infybuzz.springbatch.listener.FirstStepListener;
 import com.infybuzz.springbatch.model.StudentCsv;
 import com.infybuzz.springbatch.model.StudentJson;
+import com.infybuzz.springbatch.model.StudentXml;
 import com.infybuzz.springbatch.processor.FirstItemProcessor;
 import com.infybuzz.springbatch.reader.FirstItemReader;
 import com.infybuzz.springbatch.service.FirstTasklet;
@@ -131,8 +135,10 @@ public class SampleJob {
 		return new StepBuilder("Chunk job first step", jobRepository)
 			// .<StudentCsv, StudentCsv>chunk(3)
 			// .reader(studentCsvFlatFileItemReader(null))
-			.<StudentJson, StudentJson>chunk(3)
-			.reader(studentJsonItemReader(null))
+			// .<StudentJson, StudentJson>chunk(3)
+			// .reader(studentJsonItemReader(null))
+			.<StudentXml, StudentXml>chunk(3)
+			.reader(studentXmlItemReader(null))
 			.writer(chunk -> {
 				System.out.println("Chunk writing...");
 				chunk.forEach(System.out::println);
@@ -161,6 +167,19 @@ public class SampleJob {
 			.saveState(false)
 			.resource(resource)
 			.jsonObjectReader(new JacksonJsonObjectReader<>(StudentJson.class))
+			.build();
+	}
+
+	@Bean
+	@StepScope
+	StaxEventItemReader<StudentXml> studentXmlItemReader(@Value("#{jobParameters['inputFile']}") Resource resource) {
+		Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+		marshaller.setClassesToBeBound(StudentXml.class);
+		return new StaxEventItemReaderBuilder<StudentXml>()
+			.saveState(false)
+			.resource(resource)
+			.addFragmentRootElements("student")
+			.unmarshaller(marshaller)
 			.build();
 	}
 }
