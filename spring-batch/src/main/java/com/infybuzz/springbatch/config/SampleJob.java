@@ -1,5 +1,7 @@
 package com.infybuzz.springbatch.config;
 
+import javax.sql.DataSource;
+
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.configuration.support.MapJobRegistry;
@@ -9,6 +11,8 @@ import org.springframework.batch.core.job.parameters.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.infrastructure.item.database.JdbcCursorItemReader;
+import org.springframework.batch.infrastructure.item.database.builder.JdbcCursorItemReaderBuilder;
 import org.springframework.batch.infrastructure.item.file.FlatFileItemReader;
 import org.springframework.batch.infrastructure.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.infrastructure.item.json.JacksonJsonObjectReader;
@@ -25,6 +29,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import com.infybuzz.springbatch.listener.FirstJobListener;
 import com.infybuzz.springbatch.listener.FirstStepListener;
 import com.infybuzz.springbatch.model.StudentCsv;
+import com.infybuzz.springbatch.model.StudentJdbc;
 import com.infybuzz.springbatch.model.StudentJson;
 import com.infybuzz.springbatch.model.StudentXml;
 import com.infybuzz.springbatch.processor.FirstItemProcessor;
@@ -137,8 +142,10 @@ public class SampleJob {
 			// .reader(studentCsvFlatFileItemReader(null))
 			// .<StudentJson, StudentJson>chunk(3)
 			// .reader(studentJsonItemReader(null))
-			.<StudentXml, StudentXml>chunk(3)
-			.reader(studentXmlItemReader(null))
+			// .<StudentXml, StudentXml>chunk(3)
+			// .reader(studentXmlItemReader(null))
+			.<StudentJdbc, StudentJdbc>chunk(3)
+			.reader(studentDbItemReader(null))
 			.writer(chunk -> {
 				System.out.println("Chunk writing...");
 				chunk.forEach(System.out::println);
@@ -180,6 +187,21 @@ public class SampleJob {
 			.resource(resource)
 			.addFragmentRootElements("student")
 			.unmarshaller(marshaller)
+			.build();
+	}
+
+	@Bean
+	@StepScope
+	JdbcCursorItemReader<StudentJdbc> studentDbItemReader(DataSource dataSource) {
+		return new JdbcCursorItemReaderBuilder<StudentJdbc>()
+			.saveState(false)
+			.beanRowMapper(StudentJdbc.class)
+			.dataSource(dataSource)
+			.sql("""
+					SELECT id, first_name, last_name, email
+					FROM student
+					ORDER BY id
+					""")
 			.build();
 	}
 }
