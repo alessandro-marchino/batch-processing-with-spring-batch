@@ -231,6 +231,7 @@ public class SampleJob {
 	}
 
 	@Bean
+	@StepScope
 	FlatFileItemWriter<Student> studentCsvItemWriter(@Value("#{jobParameters['outputFile']}") WritableResource resource) {
 		DelimitedLineAggregator<Student> lineAggregator = new DelimitedLineAggregator<>();
 		lineAggregator.setFieldExtractor(new BeanWrapperFieldExtractor<>("id", "firstName", "lastName", "email"));

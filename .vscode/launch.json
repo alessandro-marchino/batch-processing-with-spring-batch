@@ -14,7 +14,7 @@
         "cwd": "${workspaceFolder}",
         "mainClass": "com.infybuzz.springbatch.SpringBatchApplication",
         "projectName": "spring-batch",
-        "args": "timestamp=${input:timestamp} inputFile=classpath:/input-files/students.csv outputFile=classpath:/output-files/students.csv",
+        "args": "timestamp=${input:timestamp} inputFile=classpath:/input-files/students.csv outputFile=file:output-files/students.csv",
         "envFile": "${workspaceFolder}/.env"
       },
       {
