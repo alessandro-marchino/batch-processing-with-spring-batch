@@ -1,0 +1,4 @@
+{"properties": [{
+  "name": "spring.datasource.university",
+  "type": "org.springframework.boot.jdbc.autoconfigure.DataSourceProperties"
+}]}

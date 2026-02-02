@@ -20,6 +20,7 @@ import org.springframework.batch.infrastructure.item.json.JsonItemReader;
 import org.springframework.batch.infrastructure.item.json.builder.JsonItemReaderBuilder;
 import org.springframework.batch.infrastructure.item.xml.StaxEventItemReader;
 import org.springframework.batch.infrastructure.item.xml.builder.StaxEventItemReaderBuilder;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -192,7 +193,7 @@ public class SampleJob {
 
 	@Bean
 	@StepScope
-	JdbcCursorItemReader<StudentJdbc> studentDbItemReader(DataSource dataSource) {
+	JdbcCursorItemReader<StudentJdbc> studentDbItemReader(@Qualifier("university") DataSource dataSource) {
 		return new JdbcCursorItemReaderBuilder<StudentJdbc>()
 			.saveState(false)
 			.beanRowMapper(StudentJdbc.class)
