@@ -1,5 +1,7 @@
 package com.infybuzz.springbatch.config;
 
+import java.time.Instant;
+
 import javax.sql.DataSource;
 
 import org.springframework.batch.core.configuration.JobRegistry;
@@ -15,7 +17,11 @@ import org.springframework.batch.infrastructure.item.adapter.ItemReaderAdapter;
 import org.springframework.batch.infrastructure.item.database.JdbcCursorItemReader;
 import org.springframework.batch.infrastructure.item.database.builder.JdbcCursorItemReaderBuilder;
 import org.springframework.batch.infrastructure.item.file.FlatFileItemReader;
+import org.springframework.batch.infrastructure.item.file.FlatFileItemWriter;
 import org.springframework.batch.infrastructure.item.file.builder.FlatFileItemReaderBuilder;
+import org.springframework.batch.infrastructure.item.file.builder.FlatFileItemWriterBuilder;
+import org.springframework.batch.infrastructure.item.file.transform.BeanWrapperFieldExtractor;
+import org.springframework.batch.infrastructure.item.file.transform.DelimitedLineAggregator;
 import org.springframework.batch.infrastructure.item.json.JacksonJsonObjectReader;
 import org.springframework.batch.infrastructure.item.json.JsonItemReader;
 import org.springframework.batch.infrastructure.item.json.builder.JsonItemReaderBuilder;
@@ -26,6 +32,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.WritableResource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import com.infybuzz.springbatch.listener.FirstJobListener;
@@ -143,6 +150,7 @@ public class SampleJob {
 
 	private Step chunkJobFirstStep() {
 		return new StepBuilder("Chunk job first step", jobRepository)
+
 			// Readers
 			.<StudentCsv, Student>chunk(3)
 			.reader(studentCsvFlatFileItemReader(null))
@@ -154,11 +162,9 @@ public class SampleJob {
 			// .reader(studentDbItemReader(null))
 			// .<StudentRest, Student>chunk(3)
 			// .reader(studentRestItemReader())
+
 			// Writers
-			.writer(chunk -> {
-				System.out.println("Chunk writing...");
-				chunk.forEach(System.out::println);
-			})
+			.writer(studentCsvItemWriter(null))
 			.build();
 	}
 
@@ -222,5 +228,19 @@ public class SampleJob {
 		adapter.setTargetMethod("getStudent");
 		adapter.setArguments(new Object[] {1L, "TEST"});
 		return adapter;
+	}
+
+	@Bean
+	FlatFileItemWriter<Student> studentCsvItemWriter(@Value("#{jobParameters['outputFile']}") WritableResource resource) {
+		DelimitedLineAggregator<Student> lineAggregator = new DelimitedLineAggregator<>();
+		lineAggregator.setFieldExtractor(new BeanWrapperFieldExtractor<>("id", "firstName", "lastName", "email"));
+
+		return new FlatFileItemWriterBuilder<Student>()
+			.saveState(false)
+			.resource(resource)
+			.headerCallback(writer -> writer.write("Id,First Name,Last Name,Email"))
+			.lineAggregator(lineAggregator)
+			.footerCallback(writer -> writer.write("Created @ " + Instant.now()))
+			.build();
 	}
 }

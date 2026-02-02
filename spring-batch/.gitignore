@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+output-files/*
+!output-files/DND
