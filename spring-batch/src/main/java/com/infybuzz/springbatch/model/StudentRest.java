@@ -3,7 +3,7 @@ package com.infybuzz.springbatch.model;
 import lombok.Data;
 
 @Data
-public class StudentRest {
+public class StudentRest implements Student {
 	private Long id;
 	private String firstName;
 	private String lastName;

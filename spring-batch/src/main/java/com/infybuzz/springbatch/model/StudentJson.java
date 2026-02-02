@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class StudentJson {
+public class StudentJson implements Student {
 
 	private Long id;
 	@JsonProperty("first_name")

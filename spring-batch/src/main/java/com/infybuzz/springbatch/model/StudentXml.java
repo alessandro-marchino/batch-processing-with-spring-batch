@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @XmlRootElement(name = "student")
-public class StudentXml {
+public class StudentXml implements Student {
 	private Long id;
 	private String firstName;
 	private String lastName;

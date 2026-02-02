@@ -30,6 +30,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import com.infybuzz.springbatch.listener.FirstJobListener;
 import com.infybuzz.springbatch.listener.FirstStepListener;
+import com.infybuzz.springbatch.model.Student;
 import com.infybuzz.springbatch.model.StudentCsv;
 import com.infybuzz.springbatch.model.StudentJdbc;
 import com.infybuzz.springbatch.model.StudentJson;
@@ -142,16 +143,18 @@ public class SampleJob {
 
 	private Step chunkJobFirstStep() {
 		return new StepBuilder("Chunk job first step", jobRepository)
-			// .<StudentCsv, StudentCsv>chunk(3)
-			// .reader(studentCsvFlatFileItemReader(null))
-			// .<StudentJson, StudentJson>chunk(3)
+			// Readers
+			.<StudentCsv, Student>chunk(3)
+			.reader(studentCsvFlatFileItemReader(null))
+			// .<StudentJson, Student>chunk(3)
 			// .reader(studentJsonItemReader(null))
-			// .<StudentXml, StudentXml>chunk(3)
+			// .<StudentXml, Student>chunk(3)
 			// .reader(studentXmlItemReader(null))
-			// .<StudentJdbc, StudentJdbc>chunk(3)
+			// .<StudentJdbc, Student>chunk(3)
 			// .reader(studentDbItemReader(null))
-			.<StudentRest, StudentRest>chunk(3)
-			.reader(studentRestItemReader())
+			// .<StudentRest, Student>chunk(3)
+			// .reader(studentRestItemReader())
+			// Writers
 			.writer(chunk -> {
 				System.out.println("Chunk writing...");
 				chunk.forEach(System.out::println);
