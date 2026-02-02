@@ -11,6 +11,7 @@ import org.springframework.batch.core.job.parameters.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.infrastructure.item.adapter.ItemReaderAdapter;
 import org.springframework.batch.infrastructure.item.database.JdbcCursorItemReader;
 import org.springframework.batch.infrastructure.item.database.builder.JdbcCursorItemReaderBuilder;
 import org.springframework.batch.infrastructure.item.file.FlatFileItemReader;
@@ -32,11 +33,13 @@ import com.infybuzz.springbatch.listener.FirstStepListener;
 import com.infybuzz.springbatch.model.StudentCsv;
 import com.infybuzz.springbatch.model.StudentJdbc;
 import com.infybuzz.springbatch.model.StudentJson;
+import com.infybuzz.springbatch.model.StudentRest;
 import com.infybuzz.springbatch.model.StudentXml;
 import com.infybuzz.springbatch.processor.FirstItemProcessor;
 import com.infybuzz.springbatch.reader.FirstItemReader;
 import com.infybuzz.springbatch.service.FirstTasklet;
 import com.infybuzz.springbatch.service.SecondTasklet;
+import com.infybuzz.springbatch.service.StudentService;
 import com.infybuzz.springbatch.writer.FirstItemWriter;
 import com.infybuzz.springbatch.writer.SecondItemWriter;
 
@@ -145,8 +148,10 @@ public class SampleJob {
 			// .reader(studentJsonItemReader(null))
 			// .<StudentXml, StudentXml>chunk(3)
 			// .reader(studentXmlItemReader(null))
-			.<StudentJdbc, StudentJdbc>chunk(3)
-			.reader(studentDbItemReader(null))
+			// .<StudentJdbc, StudentJdbc>chunk(3)
+			// .reader(studentDbItemReader(null))
+			.<StudentRest, StudentRest>chunk(3)
+			.reader(studentRestItemReader())
 			.writer(chunk -> {
 				System.out.println("Chunk writing...");
 				chunk.forEach(System.out::println);
@@ -204,5 +209,14 @@ public class SampleJob {
 					ORDER BY id
 					""")
 			.build();
+	}
+
+	@Bean
+	@StepScope
+	ItemReaderAdapter<StudentRest> studentRestItemReader() {
+		ItemReaderAdapter<StudentRest> adapter = new ItemReaderAdapter<>();
+		adapter.setTargetObject(new StudentService());
+		adapter.setTargetMethod("getStudent");
+		return adapter;
 	}
 }
