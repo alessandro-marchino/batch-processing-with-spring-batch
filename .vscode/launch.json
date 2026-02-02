@@ -36,6 +36,16 @@
         "projectName": "spring-batch",
         "args": "timestamp=${input:timestamp} inputFile=classpath:/input-files/students.xml",
         "envFile": "${workspaceFolder}/.env"
+      },
+      {
+        "type": "java",
+        "name": "Spring Boot-SpringRestServiceApplication<spring-rest-service>",
+        "request": "launch",
+        "cwd": "${workspaceFolder}",
+        "mainClass": "com.infybuzz.springrestservice.SpringRestServiceApplication",
+        "projectName": "spring-rest-service",
+        "args": "",
+        "envFile": "${workspaceFolder}/.env"
       }
     ],
     "inputs": [
