@@ -176,6 +176,7 @@ public class SampleJob {
 			// .processor(student -> StudentXml.builder().id(student.getId()).firstName(student.getFirstName()).lastName(student.getLastName()).email(student.getEmail()).build())
 			// .writer(studentXmlItemWriter(null))
 			.writer(studentDbItemWriter(null))
+			// .writer(studentDbItemWriterPreparedStatement(null))
 
 			.build();
 	}
@@ -289,6 +290,23 @@ public class SampleJob {
 				VALUES (:id, :firstName, :lastName, :email)
 			""")
 			.itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
+			.build();
+	}
+	@Bean
+	@StepScope
+	JdbcBatchItemWriter<Student> studentDbItemWriterPreparedStatement(@Qualifier("university") DataSource dataSource) {
+		return new JdbcBatchItemWriterBuilder<Student>()
+			.dataSource(dataSource)
+			.sql("""
+				INSERT INTO student_output(original_id, first_name, last_name, email)
+				VALUES (?, ?, ?, ?)
+			""")
+			.itemPreparedStatementSetter((student, ps) -> {
+				ps.setLong(1, student.getId());
+				ps.setString(2, student.getFirstName());
+				ps.setString(3, student.getLastName());
+				ps.setString(4, student.getEmail());
+			})
 			.build();
 	}
 }
