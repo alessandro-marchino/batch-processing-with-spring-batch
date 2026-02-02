@@ -21,8 +21,11 @@ import org.springframework.batch.infrastructure.item.file.FlatFileItemWriter;
 import org.springframework.batch.infrastructure.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.infrastructure.item.file.builder.FlatFileItemWriterBuilder;
 import org.springframework.batch.infrastructure.item.file.transform.BeanWrapperFieldExtractor;
+import org.springframework.batch.infrastructure.item.json.JacksonJsonObjectMarshaller;
 import org.springframework.batch.infrastructure.item.json.JacksonJsonObjectReader;
+import org.springframework.batch.infrastructure.item.json.JsonFileItemWriter;
 import org.springframework.batch.infrastructure.item.json.JsonItemReader;
+import org.springframework.batch.infrastructure.item.json.builder.JsonFileItemWriterBuilder;
 import org.springframework.batch.infrastructure.item.json.builder.JsonItemReaderBuilder;
 import org.springframework.batch.infrastructure.item.xml.StaxEventItemReader;
 import org.springframework.batch.infrastructure.item.xml.builder.StaxEventItemReaderBuilder;
@@ -163,7 +166,8 @@ public class SampleJob {
 			// .reader(studentRestItemReader())
 
 			// Writers
-			.writer(studentCsvItemWriter(null))
+			// .writer(studentCsvItemWriter(null))
+			.writer(studentJsonItemWriter(null))
 			.build();
 	}
 
@@ -241,6 +245,15 @@ public class SampleJob {
 			)
 			.headerCallback(writer -> writer.write("Id|First Name|Last Name|Email"))
 			.footerCallback(writer -> writer.write("Created @ " + Instant.now()))
+			.build();
+	}
+	@Bean
+	@StepScope
+	JsonFileItemWriter<Student> studentJsonItemWriter(@Value("#{jobParameters['outputFile']}") WritableResource resource) {
+		return new JsonFileItemWriterBuilder<Student>()
+			.saveState(false)
+			.resource(resource)
+			.jsonObjectMarshaller(new JacksonJsonObjectMarshaller<Student>())
 			.build();
 	}
 }
