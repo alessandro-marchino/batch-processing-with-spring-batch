@@ -14,7 +14,10 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.infrastructure.item.adapter.ItemReaderAdapter;
+import org.springframework.batch.infrastructure.item.database.BeanPropertyItemSqlParameterSourceProvider;
+import org.springframework.batch.infrastructure.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.infrastructure.item.database.JdbcCursorItemReader;
+import org.springframework.batch.infrastructure.item.database.builder.JdbcBatchItemWriterBuilder;
 import org.springframework.batch.infrastructure.item.database.builder.JdbcCursorItemReaderBuilder;
 import org.springframework.batch.infrastructure.item.file.FlatFileItemReader;
 import org.springframework.batch.infrastructure.item.file.FlatFileItemWriter;
@@ -170,8 +173,10 @@ public class SampleJob {
 			// Writers
 			// .writer(studentCsvItemWriter(null))
 			// .writer(studentJsonItemWriter(null))
-			.processor(student -> StudentXml.builder().id(student.getId()).firstName(student.getFirstName()).lastName(student.getLastName()).email(student.getEmail()).build())
-			.writer(studentXmlItemWriter(null))
+			// .processor(student -> StudentXml.builder().id(student.getId()).firstName(student.getFirstName()).lastName(student.getLastName()).email(student.getEmail()).build())
+			// .writer(studentXmlItemWriter(null))
+			.writer(studentDbItemWriter(null))
+
 			.build();
 	}
 
@@ -271,6 +276,19 @@ public class SampleJob {
 			.resource(resource)
 			.rootTagName("students")
 			.marshaller(marshaller)
+			.build();
+	}
+
+	@Bean
+	@StepScope
+	JdbcBatchItemWriter<Student> studentDbItemWriter(@Qualifier("university") DataSource dataSource) {
+		return new JdbcBatchItemWriterBuilder<Student>()
+			.dataSource(dataSource)
+			.sql("""
+				INSERT INTO student_output(original_id, first_name, last_name, email)
+				VALUES (:id, :firstName, :lastName, :email)
+			""")
+			.itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
 			.build();
 	}
 }
