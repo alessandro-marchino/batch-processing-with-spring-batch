@@ -217,6 +217,7 @@ public class SampleJob {
 		ItemReaderAdapter<StudentRest> adapter = new ItemReaderAdapter<>();
 		adapter.setTargetObject(new StudentService());
 		adapter.setTargetMethod("getStudent");
+		adapter.setArguments(new Object[] {1L, "TEST"});
 		return adapter;
 	}
 }

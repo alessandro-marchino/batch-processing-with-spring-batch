@@ -8,8 +8,10 @@ import org.springframework.web.client.RestClient;
 import com.infybuzz.springbatch.model.StudentRest;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
+@Slf4j
 public class StudentService {
 
 	private List<StudentRest> list;
@@ -23,7 +25,8 @@ public class StudentService {
 		return list;
 	}
 
-	public StudentRest getStudent() {
+	public StudentRest getStudent(long id, String name) {
+		log.info("Id: {}, name: {}", id, name);
 		if(list == null) {
 			restCallToGetStudents();
 		}
