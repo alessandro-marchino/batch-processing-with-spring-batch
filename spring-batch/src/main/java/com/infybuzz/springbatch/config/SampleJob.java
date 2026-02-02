@@ -21,7 +21,6 @@ import org.springframework.batch.infrastructure.item.file.FlatFileItemWriter;
 import org.springframework.batch.infrastructure.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.infrastructure.item.file.builder.FlatFileItemWriterBuilder;
 import org.springframework.batch.infrastructure.item.file.transform.BeanWrapperFieldExtractor;
-import org.springframework.batch.infrastructure.item.file.transform.DelimitedLineAggregator;
 import org.springframework.batch.infrastructure.item.json.JacksonJsonObjectReader;
 import org.springframework.batch.infrastructure.item.json.JsonItemReader;
 import org.springframework.batch.infrastructure.item.json.builder.JsonItemReaderBuilder;
@@ -233,14 +232,14 @@ public class SampleJob {
 	@Bean
 	@StepScope
 	FlatFileItemWriter<Student> studentCsvItemWriter(@Value("#{jobParameters['outputFile']}") WritableResource resource) {
-		DelimitedLineAggregator<Student> lineAggregator = new DelimitedLineAggregator<>();
-		lineAggregator.setFieldExtractor(new BeanWrapperFieldExtractor<>("id", "firstName", "lastName", "email"));
-
 		return new FlatFileItemWriterBuilder<Student>()
 			.saveState(false)
 			.resource(resource)
-			.headerCallback(writer -> writer.write("Id,First Name,Last Name,Email"))
-			.lineAggregator(lineAggregator)
+			.delimited(spec -> spec
+				.delimiter("|")
+				.fieldExtractor(new BeanWrapperFieldExtractor<>("id", "firstName", "lastName", "email"))
+			)
+			.headerCallback(writer -> writer.write("Id|First Name|Last Name|Email"))
 			.footerCallback(writer -> writer.write("Created @ " + Instant.now()))
 			.build();
 	}

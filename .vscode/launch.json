@@ -2,19 +2,32 @@
     "configurations": [
       {
         "type": "java",
-        "name": "StudentXml",
-        "request": "launch",
-        "mainClass": "com.infybuzz.springbatch.model.StudentXml",
-        "projectName": "spring-batch"
-      },
-      {
-        "type": "java",
-        "name": "Spring Boot-SpringBatchApplication<spring-batch> - CSV",
+        "name": "Spring Boot-SpringBatchApplication<spring-batch> - CSV2CSV",
         "request": "launch",
         "cwd": "${workspaceFolder}",
         "mainClass": "com.infybuzz.springbatch.SpringBatchApplication",
         "projectName": "spring-batch",
         "args": "timestamp=${input:timestamp} inputFile=classpath:/input-files/students.csv outputFile=file:output-files/students.csv",
+        "envFile": "${workspaceFolder}/.env"
+      },
+      {
+        "type": "java",
+        "name": "Spring Boot-SpringBatchApplication<spring-batch> - CSV2JSON",
+        "request": "launch",
+        "cwd": "${workspaceFolder}",
+        "mainClass": "com.infybuzz.springbatch.SpringBatchApplication",
+        "projectName": "spring-batch",
+        "args": "timestamp=${input:timestamp} inputFile=classpath:/input-files/students.csv outputFile=file:output-files/students.json",
+        "envFile": "${workspaceFolder}/.env"
+      },
+      {
+        "type": "java",
+        "name": "Spring Boot-SpringBatchApplication<spring-batch> - CSV2XML",
+        "request": "launch",
+        "cwd": "${workspaceFolder}",
+        "mainClass": "com.infybuzz.springbatch.SpringBatchApplication",
+        "projectName": "spring-batch",
+        "args": "timestamp=${input:timestamp} inputFile=classpath:/input-files/students.csv outputFile=file:output-files/students.xml",
         "envFile": "${workspaceFolder}/.env"
       },
       {
