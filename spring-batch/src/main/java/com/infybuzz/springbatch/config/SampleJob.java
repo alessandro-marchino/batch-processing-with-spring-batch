@@ -28,7 +28,9 @@ import org.springframework.batch.infrastructure.item.json.JsonItemReader;
 import org.springframework.batch.infrastructure.item.json.builder.JsonFileItemWriterBuilder;
 import org.springframework.batch.infrastructure.item.json.builder.JsonItemReaderBuilder;
 import org.springframework.batch.infrastructure.item.xml.StaxEventItemReader;
+import org.springframework.batch.infrastructure.item.xml.StaxEventItemWriter;
 import org.springframework.batch.infrastructure.item.xml.builder.StaxEventItemReaderBuilder;
+import org.springframework.batch.infrastructure.item.xml.builder.StaxEventItemWriterBuilder;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -167,7 +169,9 @@ public class SampleJob {
 
 			// Writers
 			// .writer(studentCsvItemWriter(null))
-			.writer(studentJsonItemWriter(null))
+			// .writer(studentJsonItemWriter(null))
+			.processor(student -> StudentXml.builder().id(student.getId()).firstName(student.getFirstName()).lastName(student.getLastName()).email(student.getEmail()).build())
+			.writer(studentXmlItemWriter(null))
 			.build();
 	}
 
@@ -254,6 +258,19 @@ public class SampleJob {
 			.saveState(false)
 			.resource(resource)
 			.jsonObjectMarshaller(new JacksonJsonObjectMarshaller<Student>())
+			.build();
+	}
+
+	@Bean
+	@StepScope
+	StaxEventItemWriter<Student> studentXmlItemWriter(@Value("#{jobParameters['outputFile']}") WritableResource resource) {
+		Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+		marshaller.setClassesToBeBound(StudentXml.class);
+		return new StaxEventItemWriterBuilder<Student>()
+			.saveState(false)
+			.resource(resource)
+			.rootTagName("students")
+			.marshaller(marshaller)
 			.build();
 	}
 }

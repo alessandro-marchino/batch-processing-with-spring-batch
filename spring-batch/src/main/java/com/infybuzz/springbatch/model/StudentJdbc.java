@@ -1,8 +1,14 @@
 package com.infybuzz.springbatch.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class StudentJdbc implements Student {
 	private Long id;
 	private String firstName;
