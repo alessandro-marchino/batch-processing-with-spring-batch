@@ -14,6 +14,7 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.infrastructure.item.adapter.ItemReaderAdapter;
+import org.springframework.batch.infrastructure.item.adapter.ItemWriterAdapter;
 import org.springframework.batch.infrastructure.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.infrastructure.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.infrastructure.item.database.JdbcCursorItemReader;
@@ -175,8 +176,9 @@ public class SampleJob {
 			// .writer(studentJsonItemWriter(null))
 			// .processor(student -> StudentXml.builder().id(student.getId()).firstName(student.getFirstName()).lastName(student.getLastName()).email(student.getEmail()).build())
 			// .writer(studentXmlItemWriter(null))
-			.writer(studentDbItemWriter(null))
+			// .writer(studentDbItemWriter(null))
 			// .writer(studentDbItemWriterPreparedStatement(null))
+			.writer(studentRestItemWriter())
 
 			.build();
 	}
@@ -308,5 +310,14 @@ public class SampleJob {
 				ps.setString(4, student.getEmail());
 			})
 			.build();
+	}
+
+	@Bean
+	@StepScope
+	ItemWriterAdapter<Student> studentRestItemWriter() {
+		ItemWriterAdapter<Student> adapter = new ItemWriterAdapter<>();
+		adapter.setTargetObject(new StudentService());
+		adapter.setTargetMethod("restCallToCreateStudent");
+		return adapter;
 	}
 }

@@ -42,6 +42,16 @@
       },
       {
         "type": "java",
+        "name": "Spring Boot-SpringBatchApplication<spring-batch> - CSV2REST",
+        "request": "launch",
+        "cwd": "${workspaceFolder}",
+        "mainClass": "com.infybuzz.springbatch.SpringBatchApplication",
+        "projectName": "spring-batch",
+        "args": "timestamp=${input:timestamp} inputFile=classpath:/input-files/students.csv",
+        "envFile": "${workspaceFolder}/.env"
+      },
+      {
+        "type": "java",
         "name": "Spring Boot-SpringBatchApplication<spring-batch> - JSON",
         "request": "launch",
         "cwd": "${workspaceFolder}",
@@ -58,6 +68,28 @@
         "mainClass": "com.infybuzz.springbatch.SpringBatchApplication",
         "projectName": "spring-batch",
         "args": "timestamp=${input:timestamp} inputFile=classpath:/input-files/students.xml",
+        "envFile": "${workspaceFolder}/.env"
+      },
+
+      {
+        "type": "java",
+        "name": "Spring Boot-SpringBatchApplication<spring-batch> - DB",
+        "request": "launch",
+        "cwd": "${workspaceFolder}",
+        "mainClass": "com.infybuzz.springbatch.SpringBatchApplication",
+        "projectName": "spring-batch",
+        "args": "timestamp=${input:timestamp}",
+        "envFile": "${workspaceFolder}/.env"
+      },
+
+      {
+        "type": "java",
+        "name": "Spring Boot-SpringBatchApplication<spring-batch> - REST",
+        "request": "launch",
+        "cwd": "${workspaceFolder}",
+        "mainClass": "com.infybuzz.springbatch.SpringBatchApplication",
+        "projectName": "spring-batch",
+        "args": "timestamp=${input:timestamp}",
         "envFile": "${workspaceFolder}/.env"
       },
       {

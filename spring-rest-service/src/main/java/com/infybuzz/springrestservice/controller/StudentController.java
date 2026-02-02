@@ -36,7 +36,7 @@ public class StudentController {
 
 	@PostMapping
 	public StudentResponse createStudent(@RequestBody StudentRequest studentRequest) {
-		LOG.info("Student created: {}");
+		LOG.info("Student created: {}", studentRequest);
 		return new StudentResponse(
 			studentRequest.id(),
 			studentRequest.firstName(),
