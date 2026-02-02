@@ -2,15 +2,21 @@ package com.infybuzz.springrestservice.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.infybuzz.springrestservice.model.StudentRequest;
 import com.infybuzz.springrestservice.model.StudentResponse;
 
 @RestController
 @RequestMapping("/api/v1/students")
 public class StudentController {
+	private static final Logger LOG = LoggerFactory.getLogger(StudentController.class);
 
 	@GetMapping
 	public List<StudentResponse> students() {
@@ -26,5 +32,15 @@ public class StudentController {
 			new StudentResponse(9L, "Mona", "Sharma", "mona@gmail.com"),
 			new StudentResponse(10L, "Rahul", "Varma", "rahul@gmail.com")
 		);
+	}
+
+	@PostMapping
+	public StudentResponse createStudent(@RequestBody StudentRequest studentRequest) {
+		LOG.info("Student created: {}");
+		return new StudentResponse(
+			studentRequest.id(),
+			studentRequest.firstName(),
+			studentRequest.lastName(),
+			studentRequest.email());
 	}
 }
