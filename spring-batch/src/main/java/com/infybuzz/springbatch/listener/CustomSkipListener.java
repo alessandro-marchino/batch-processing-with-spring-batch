@@ -30,8 +30,7 @@ public class CustomSkipListener implements SkipListener<StudentCsv, Student> {
 	}
 	@Override
 	public void onSkipInWrite(Student item, Throwable t) {
-		// TODO Auto-generated method stub
-		SkipListener.super.onSkipInWrite(item, t);
+		createFile("output-files/chunk_job/chunk_job_first_step/writer/skip-in-writer.txt", item.toString() + " - " + t.getMessage());
 	}
 
 	public void createFile(String filePath, String data) {

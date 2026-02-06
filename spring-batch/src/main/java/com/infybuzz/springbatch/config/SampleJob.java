@@ -1,7 +1,6 @@
 package com.infybuzz.springbatch.config;
 
 import java.time.Instant;
-import java.util.function.Function;
 
 import javax.sql.DataSource;
 
@@ -15,7 +14,6 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.skip.AlwaysSkipItemSkipPolicy;
-import org.springframework.batch.core.step.skip.SkipPolicy;
 import org.springframework.batch.infrastructure.item.ItemProcessor;
 import org.springframework.batch.infrastructure.item.adapter.ItemReaderAdapter;
 import org.springframework.batch.infrastructure.item.adapter.ItemWriterAdapter;
@@ -283,7 +281,13 @@ public class SampleJob {
 			.resource(resource)
 			.delimited(spec -> spec
 				.delimiter("|")
-				.fieldExtractor(new BeanWrapperFieldExtractor<>("id", "firstName", "lastName", "email"))
+				.fieldExtractor(item -> {
+					if(Math.random() > 0.5) {
+						throw new NullPointerException();
+					}
+					return new Object[] { item.getId(), item.getFirstName(), item.getLastName(), item.getEmail() };
+				})
+				// .fieldExtractor(new BeanWrapperFieldExtractor<>("id", "firstName", "lastName", "email"))
 			)
 			.headerCallback(writer -> writer.write("Id|First Name|Last Name|Email"))
 			.footerCallback(writer -> writer.write("Created @ " + Instant.now()))
