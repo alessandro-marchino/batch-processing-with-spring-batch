@@ -50,6 +50,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import com.infybuzz.springbatch.listener.FirstJobListener;
 import com.infybuzz.springbatch.listener.FirstStepListener;
+import com.infybuzz.springbatch.listener.CustomSkipListener;
 import com.infybuzz.springbatch.model.Student;
 import com.infybuzz.springbatch.model.StudentCsv;
 import com.infybuzz.springbatch.model.StudentJdbc;
@@ -85,6 +86,9 @@ public class SampleJob {
 	private final FirstItemProcessor firstItemProcessor;
 	private final FirstItemWriter firstItemWriter;
 	private final SecondItemWriter secondItemWriter;
+
+	// Chunk job
+	private final CustomSkipListener skipListener;
 
 	@Bean
 	JobRegistry jobRegistry() throws Exception {
@@ -193,6 +197,7 @@ public class SampleJob {
 			// .skip(FlatFileParseException.class)
 			// .skipLimit(Long.MAX_VALUE)
 			.skipPolicy(new AlwaysSkipItemSkipPolicy())
+			.skipListener(skipListener)
 
 			.build();
 	}

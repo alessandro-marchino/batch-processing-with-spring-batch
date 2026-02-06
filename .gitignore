@@ -1,2 +1,3 @@
-output-files/
+output-files/**/*.*
 !output-files/DND
+!output-files/**/DND
