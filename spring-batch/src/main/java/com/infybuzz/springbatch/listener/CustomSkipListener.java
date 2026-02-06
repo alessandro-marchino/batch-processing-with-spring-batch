@@ -26,8 +26,7 @@ public class CustomSkipListener implements SkipListener<StudentCsv, Student> {
 	}
 	@Override
 	public void onSkipInProcess(StudentCsv item, Throwable t) {
-		// TODO Auto-generated method stub
-		SkipListener.super.onSkipInProcess(item, t);
+		createFile("output-files/chunk_job/chunk_job_first_step/processor/skip-in-process.txt", item.toString() + " - " + t.getMessage());
 	}
 	@Override
 	public void onSkipInWrite(Student item, Throwable t) {
