@@ -27,7 +27,6 @@ import org.springframework.batch.infrastructure.item.file.FlatFileItemWriter;
 import org.springframework.batch.infrastructure.item.file.FlatFileParseException;
 import org.springframework.batch.infrastructure.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.infrastructure.item.file.builder.FlatFileItemWriterBuilder;
-import org.springframework.batch.infrastructure.item.file.transform.BeanWrapperFieldExtractor;
 import org.springframework.batch.infrastructure.item.json.JacksonJsonObjectMarshaller;
 import org.springframework.batch.infrastructure.item.json.JacksonJsonObjectReader;
 import org.springframework.batch.infrastructure.item.json.JsonFileItemWriter;
@@ -190,8 +189,11 @@ public class SampleJob {
 			// .writer(studentRestItemWriter())
 
 			.faultTolerant()
-			.skip(FlatFileParseException.class)
-			.skip(NullPointerException.class)
+			.skipLimit(100)
+			// .skip(FlatFileParseException.class)
+			// .skip(NullPointerException.class)
+			.retryLimit(1)
+			.retry(Exception.class)
 			// .skip(FlatFileParseException.class)
 			// .skipLimit(Long.MAX_VALUE)
 			.skipPolicy(new AlwaysSkipItemSkipPolicy())
