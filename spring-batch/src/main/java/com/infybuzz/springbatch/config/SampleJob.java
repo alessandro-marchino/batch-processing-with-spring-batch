@@ -1,6 +1,7 @@
 package com.infybuzz.springbatch.config;
 
 import java.time.Instant;
+import java.util.function.Function;
 
 import javax.sql.DataSource;
 
@@ -13,6 +14,9 @@ import org.springframework.batch.core.job.parameters.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.core.step.skip.AlwaysSkipItemSkipPolicy;
+import org.springframework.batch.core.step.skip.SkipPolicy;
+import org.springframework.batch.infrastructure.item.ItemProcessor;
 import org.springframework.batch.infrastructure.item.adapter.ItemReaderAdapter;
 import org.springframework.batch.infrastructure.item.adapter.ItemWriterAdapter;
 import org.springframework.batch.infrastructure.item.database.BeanPropertyItemSqlParameterSourceProvider;
@@ -22,6 +26,7 @@ import org.springframework.batch.infrastructure.item.database.builder.JdbcBatchI
 import org.springframework.batch.infrastructure.item.database.builder.JdbcCursorItemReaderBuilder;
 import org.springframework.batch.infrastructure.item.file.FlatFileItemReader;
 import org.springframework.batch.infrastructure.item.file.FlatFileItemWriter;
+import org.springframework.batch.infrastructure.item.file.FlatFileParseException;
 import org.springframework.batch.infrastructure.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.infrastructure.item.file.builder.FlatFileItemWriterBuilder;
 import org.springframework.batch.infrastructure.item.file.transform.BeanWrapperFieldExtractor;
@@ -171,16 +176,36 @@ public class SampleJob {
 			// .<StudentRest, Student>chunk(3)
 			// .reader(studentRestItemReader())
 
+			.processor(passthroughProcessor(Student.class, StudentCsv.class))
+
 			// Writers
-			// .writer(studentCsvItemWriter(null))
+			.writer(studentCsvItemWriter(null))
 			// .writer(studentJsonItemWriter(null))
 			// .processor(student -> StudentXml.builder().id(student.getId()).firstName(student.getFirstName()).lastName(student.getLastName()).email(student.getEmail()).build())
 			// .writer(studentXmlItemWriter(null))
 			// .writer(studentDbItemWriter(null))
 			// .writer(studentDbItemWriterPreparedStatement(null))
-			.writer(studentRestItemWriter())
+			// .writer(studentRestItemWriter())
+
+			.faultTolerant()
+			.skip(FlatFileParseException.class)
+			.skip(NullPointerException.class)
+			// .skip(FlatFileParseException.class)
+			// .skipLimit(Long.MAX_VALUE)
+			.skipPolicy(new AlwaysSkipItemSkipPolicy())
 
 			.build();
+	}
+
+	@Bean
+	<A, B extends A> ItemProcessor<B, A> passthroughProcessor(Class<A> clazzA, Class<B> clazzB) {
+		return item -> {
+			// Do anything
+			if(Math.random() > 0.5) {
+				throw new NullPointerException();
+			}
+			return item;
+		};
 	}
 
 	@Bean
