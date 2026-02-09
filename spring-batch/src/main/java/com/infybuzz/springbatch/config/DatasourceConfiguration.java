@@ -9,6 +9,7 @@ import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
@@ -77,5 +78,14 @@ public class DatasourceConfiguration {
 		lem.afterPropertiesSet();
 
 		return lem.getObject();
+	}
+
+	@Bean
+	@Primary
+	JpaTransactionManager jpaTransactionManager(@Qualifier("mysql") EntityManagerFactory entityManagerFactory, @Qualifier("mysql") DataSource dataSource) {
+		JpaTransactionManager jtm = new JpaTransactionManager();
+		jtm.setDataSource(dataSource);
+		jtm.setEntityManagerFactory(entityManagerFactory);
+		return jtm;
 	}
 }

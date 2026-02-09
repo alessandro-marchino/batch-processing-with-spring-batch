@@ -21,9 +21,11 @@ import org.springframework.batch.infrastructure.item.database.BeanPropertyItemSq
 import org.springframework.batch.infrastructure.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.infrastructure.item.database.JdbcCursorItemReader;
 import org.springframework.batch.infrastructure.item.database.JpaCursorItemReader;
+import org.springframework.batch.infrastructure.item.database.JpaItemWriter;
 import org.springframework.batch.infrastructure.item.database.builder.JdbcBatchItemWriterBuilder;
 import org.springframework.batch.infrastructure.item.database.builder.JdbcCursorItemReaderBuilder;
 import org.springframework.batch.infrastructure.item.database.builder.JpaCursorItemReaderBuilder;
+import org.springframework.batch.infrastructure.item.database.builder.JpaItemWriterBuilder;
 import org.springframework.batch.infrastructure.item.file.FlatFileItemReader;
 import org.springframework.batch.infrastructure.item.file.FlatFileItemWriter;
 import org.springframework.batch.infrastructure.item.file.builder.FlatFileItemReaderBuilder;
@@ -366,6 +368,14 @@ public class SampleJob {
 			.saveState(false)
 			.entityManagerFactory(entityManagerFactory)
 			.queryString("FROM Student")
+			.build();
+	}
+
+	@Bean
+	@StepScope
+	JpaItemWriter<com.infybuzz.springbatch.entity.mysql.Student> jpaItemWriterStudent(@Qualifier("mysql") EntityManagerFactory entityManagerFactory) {
+		return new JpaItemWriterBuilder<com.infybuzz.springbatch.entity.mysql.Student>()
+			.entityManagerFactory(entityManagerFactory)
 			.build();
 	}
 }
