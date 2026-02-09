@@ -9,7 +9,7 @@ spring:
       username: university
       password: password
     postgres:
-      url: jdbc:postgres://localhost:5432/university
+      url: jdbc:postgresql://localhost:5432/university
       username: university
       password: password
 

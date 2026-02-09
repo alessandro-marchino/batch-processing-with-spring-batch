@@ -30,31 +30,31 @@ public class DatasourceConfiguration {
 		return properties.initializeDataSourceBuilder().build();
 	}
 
-	@Bean
+	@Bean(defaultCandidate = false)
 	@Qualifier("university")
 	@ConfigurationProperties("spring.datasource.university")
 	DataSourceProperties universityDataSourceProperties() {
 		return new DataSourceProperties();
 	}
-	@Bean
+	@Bean(defaultCandidate = false)
 	@Qualifier("university")
     DataSource universityDataSource(@Qualifier("university") DataSourceProperties properties) {
 		return properties.initializeDataSourceBuilder().build();
 	}
 
-	@Bean
+	@Bean(defaultCandidate = false)
 	@Qualifier("postgres")
 	@ConfigurationProperties("spring.datasource.postgres")
 	DataSourceProperties postgresDataSourceProperties() {
 		return new DataSourceProperties();
 	}
-	@Bean
+	@Bean(defaultCandidate = false)
 	@Qualifier("postgres")
     DataSource postgresDataSource(@Qualifier("postgres") DataSourceProperties properties) {
 		return properties.initializeDataSourceBuilder().build();
 	}
 
-	@Bean
+	@Bean(defaultCandidate = false)
 	@Qualifier("postgres")
 	EntityManagerFactory postgresEntityManagerFactory(@Qualifier("postgres") DataSource datasource) {
 		LocalContainerEntityManagerFactoryBean lem = new LocalContainerEntityManagerFactoryBean();
@@ -67,7 +67,7 @@ public class DatasourceConfiguration {
 		return lem.getObject();
 	}
 
-	@Bean
+	@Bean(defaultCandidate = false)
 	@Qualifier("university")
 	EntityManagerFactory universityEntityManagerFactory(@Qualifier("university") DataSource datasource) {
 		LocalContainerEntityManagerFactoryBean lem = new LocalContainerEntityManagerFactoryBean();
@@ -82,7 +82,7 @@ public class DatasourceConfiguration {
 
 	@Bean
 	@Primary
-	JpaTransactionManager jpaTransactionManager(@Qualifier("mysql") EntityManagerFactory entityManagerFactory, @Qualifier("mysql") DataSource dataSource) {
+	JpaTransactionManager jpaTransactionManager(@Qualifier("university") EntityManagerFactory entityManagerFactory, @Qualifier("university") DataSource dataSource) {
 		JpaTransactionManager jtm = new JpaTransactionManager();
 		jtm.setDataSource(dataSource);
 		jtm.setEntityManagerFactory(entityManagerFactory);

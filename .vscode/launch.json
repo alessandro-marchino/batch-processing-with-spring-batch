@@ -70,7 +70,6 @@
         "args": "timestamp=${input:timestamp} inputFile=classpath:/input-files/students.xml",
         "envFile": "${workspaceFolder}/.env"
       },
-
       {
         "type": "java",
         "name": "Spring Boot-SpringBatchApplication<spring-batch> - DB",
@@ -81,7 +80,6 @@
         "args": "timestamp=${input:timestamp}",
         "envFile": "${workspaceFolder}/.env"
       },
-
       {
         "type": "java",
         "name": "Spring Boot-SpringBatchApplication<spring-batch> - REST",
@@ -89,6 +87,17 @@
         "cwd": "${workspaceFolder}",
         "mainClass": "com.infybuzz.springbatch.SpringBatchApplication",
         "projectName": "spring-batch",
+        "args": "timestamp=${input:timestamp}",
+        "envFile": "${workspaceFolder}/.env"
+      },
+      {
+        "type": "java",
+        "name": "Spring Boot-SpringBatchApplication<spring-batch> - MIGRATION",
+        "request": "launch",
+        "cwd": "${workspaceFolder}",
+        "mainClass": "com.infybuzz.springbatch.SpringBatchApplication",
+        "projectName": "spring-batch",
+        "vmArgs": "-Dspring.batch.job.name=\"Migration Job\"",
         "args": "timestamp=${input:timestamp}",
         "envFile": "${workspaceFolder}/.env"
       },

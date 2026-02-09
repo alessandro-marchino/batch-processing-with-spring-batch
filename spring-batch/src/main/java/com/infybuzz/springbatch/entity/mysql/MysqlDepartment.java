@@ -12,21 +12,17 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "subjects_learning")
+@Table(name = "department")
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SubjectsLearning {
+public class MysqlDepartment {
 
 	@Id
 	private Long id;
-	@Column(name = "sub_name")
-	private String subName;
-	@Column(name = "student_id")
-	private Long studentId;
-	@Column(name = "marks_obtained")
-	private Long marksObtained;
+	@Column(name = "dept_name")
+	private String deptName;
 }
