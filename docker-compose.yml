@@ -13,6 +13,15 @@ services:
       - ./files/mysql-8:/docker-entrypoint-initdb.d
     cap_add:
       - SYS_NICE
+  postgresql:
+    image: postgres:15
+    environment:
+      POSTGRES_PASSWORD: 'postgres'
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
 
 volumes:
   mysql_data:
+  postgresql_data:

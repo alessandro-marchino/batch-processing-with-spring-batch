@@ -24,7 +24,6 @@ import org.springframework.batch.infrastructure.item.database.builder.JdbcBatchI
 import org.springframework.batch.infrastructure.item.database.builder.JdbcCursorItemReaderBuilder;
 import org.springframework.batch.infrastructure.item.file.FlatFileItemReader;
 import org.springframework.batch.infrastructure.item.file.FlatFileItemWriter;
-import org.springframework.batch.infrastructure.item.file.FlatFileParseException;
 import org.springframework.batch.infrastructure.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.infrastructure.item.file.builder.FlatFileItemWriterBuilder;
 import org.springframework.batch.infrastructure.item.json.JacksonJsonObjectMarshaller;
