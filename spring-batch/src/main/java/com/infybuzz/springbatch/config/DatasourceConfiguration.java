@@ -2,12 +2,17 @@ package com.infybuzz.springbatch.config;
 
 import javax.sql.DataSource;
 
+import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+
+import jakarta.persistence.EntityManagerFactory;
 
 @Configuration
 public class DatasourceConfiguration {
@@ -46,5 +51,31 @@ public class DatasourceConfiguration {
 	@Qualifier("postgres")
     DataSource postgresDataSource(@Qualifier("postgres") DataSourceProperties properties) {
 		return properties.initializeDataSourceBuilder().build();
+	}
+
+	@Bean
+	@Qualifier("postgres")
+	EntityManagerFactory postgresEntityManagerFactory(@Qualifier("postgres") DataSource datasource) {
+		LocalContainerEntityManagerFactoryBean lem = new LocalContainerEntityManagerFactoryBean();
+		lem.setDataSource(datasource);
+		lem.setPackagesToScan("com.infybuzz.springbatch.entity.postgresql");
+		lem.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+		lem.setPersistenceProviderClass(HibernatePersistenceProvider.class);
+		lem.afterPropertiesSet();
+
+		return lem.getObject();
+	}
+
+	@Bean
+	@Qualifier("university")
+	EntityManagerFactory universityEntityManagerFactory(@Qualifier("university") DataSource datasource) {
+		LocalContainerEntityManagerFactoryBean lem = new LocalContainerEntityManagerFactoryBean();
+		lem.setDataSource(datasource);
+		lem.setPackagesToScan("com.infybuzz.springbatch.entity.mysql");
+		lem.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+		lem.setPersistenceProviderClass(HibernatePersistenceProvider.class);
+		lem.afterPropertiesSet();
+
+		return lem.getObject();
 	}
 }
