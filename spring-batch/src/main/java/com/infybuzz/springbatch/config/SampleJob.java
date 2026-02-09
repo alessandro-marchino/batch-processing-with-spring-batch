@@ -58,6 +58,9 @@ import com.infybuzz.springbatch.model.StudentJson;
 import com.infybuzz.springbatch.model.StudentRest;
 import com.infybuzz.springbatch.model.StudentXml;
 import com.infybuzz.springbatch.processor.FirstItemProcessor;
+import com.infybuzz.springbatch.processor.migration.DepartmentMigrationProcessor;
+import com.infybuzz.springbatch.processor.migration.StudentMigrationProcessor;
+import com.infybuzz.springbatch.processor.migration.SubjectsLearningMigrationProcessor;
 import com.infybuzz.springbatch.reader.FirstItemReader;
 import com.infybuzz.springbatch.service.FirstTasklet;
 import com.infybuzz.springbatch.service.SecondTasklet;
@@ -203,6 +206,52 @@ public class SampleJob {
 			.skipPolicy(new AlwaysSkipItemSkipPolicy())
 			.skipListener(skipListener)
 
+			.build();
+	}
+
+	@Bean
+	Job migrationJob() {
+		return new JobBuilder("Migration Job", jobRepository)
+			.start(migrationJobDepartmentStep())
+			// .next(migrationJobStudentStep())
+			// .next(migrationJobSubjectsLearningStep())
+			.build();
+	}
+
+	private Step migrationJobDepartmentStep() {
+		return new StepBuilder("Migration job department step", jobRepository)
+			// Readers
+			.<com.infybuzz.springbatch.entity.postgresql.Department, com.infybuzz.springbatch.entity.mysql.Department>chunk(3)
+			.reader(jpaCursorItemReaderDepartment(null))
+			// Processors
+			.processor(new DepartmentMigrationProcessor())
+			// Writers
+			.writer(jpaItemWriterDepartment(null))
+			.faultTolerant()
+			.build();
+	}
+	private Step migrationJobStudentStep() {
+		return new StepBuilder("Migration job student step", jobRepository)
+			// Readers
+			.<com.infybuzz.springbatch.entity.postgresql.Student, com.infybuzz.springbatch.entity.mysql.Student>chunk(3)
+			.reader(jpaCursorItemReaderStudent(null))
+			// Processors
+			.processor(new StudentMigrationProcessor())
+			// Writers
+			.writer(jpaItemWriterStudent(null))
+			.faultTolerant()
+			.build();
+	}
+	private Step migrationJobSubjectsLearningStep() {
+		return new StepBuilder("Migration job subjects learning step", jobRepository)
+			// Readers
+			.<com.infybuzz.springbatch.entity.postgresql.SubjectsLearning, com.infybuzz.springbatch.entity.mysql.SubjectsLearning>chunk(3)
+			.reader(jpaCursorItemReaderSubjectsLearning(null))
+			// Processors
+			.processor(new SubjectsLearningMigrationProcessor())
+			// Writers
+			.writer(jpaItemWriterSubjectsLearning(null))
+			.faultTolerant()
 			.build();
 	}
 
@@ -375,6 +424,42 @@ public class SampleJob {
 	@StepScope
 	JpaItemWriter<com.infybuzz.springbatch.entity.mysql.Student> jpaItemWriterStudent(@Qualifier("mysql") EntityManagerFactory entityManagerFactory) {
 		return new JpaItemWriterBuilder<com.infybuzz.springbatch.entity.mysql.Student>()
+			.entityManagerFactory(entityManagerFactory)
+			.build();
+	}
+
+	@Bean
+	@StepScope
+	JpaCursorItemReader<com.infybuzz.springbatch.entity.postgresql.Department> jpaCursorItemReaderDepartment(@Qualifier("postgres") EntityManagerFactory entityManagerFactory) {
+		return new JpaCursorItemReaderBuilder<com.infybuzz.springbatch.entity.postgresql.Department>()
+			.saveState(false)
+			.entityManagerFactory(entityManagerFactory)
+			.queryString("FROM Department")
+			.build();
+	}
+
+	@Bean
+	@StepScope
+	JpaItemWriter<com.infybuzz.springbatch.entity.mysql.Department> jpaItemWriterDepartment(@Qualifier("mysql") EntityManagerFactory entityManagerFactory) {
+		return new JpaItemWriterBuilder<com.infybuzz.springbatch.entity.mysql.Department>()
+			.entityManagerFactory(entityManagerFactory)
+			.build();
+	}
+
+	@Bean
+	@StepScope
+	JpaCursorItemReader<com.infybuzz.springbatch.entity.postgresql.SubjectsLearning> jpaCursorItemReaderSubjectsLearning(@Qualifier("postgres") EntityManagerFactory entityManagerFactory) {
+		return new JpaCursorItemReaderBuilder<com.infybuzz.springbatch.entity.postgresql.SubjectsLearning>()
+			.saveState(false)
+			.entityManagerFactory(entityManagerFactory)
+			.queryString("FROM SubjectsLearning")
+			.build();
+	}
+
+	@Bean
+	@StepScope
+	JpaItemWriter<com.infybuzz.springbatch.entity.mysql.SubjectsLearning> jpaItemWriterSubjectsLearning(@Qualifier("mysql") EntityManagerFactory entityManagerFactory) {
+		return new JpaItemWriterBuilder<com.infybuzz.springbatch.entity.mysql.SubjectsLearning>()
 			.entityManagerFactory(entityManagerFactory)
 			.build();
 	}
