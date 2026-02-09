@@ -20,8 +20,10 @@ import org.springframework.batch.infrastructure.item.adapter.ItemWriterAdapter;
 import org.springframework.batch.infrastructure.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.infrastructure.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.infrastructure.item.database.JdbcCursorItemReader;
+import org.springframework.batch.infrastructure.item.database.JpaCursorItemReader;
 import org.springframework.batch.infrastructure.item.database.builder.JdbcBatchItemWriterBuilder;
 import org.springframework.batch.infrastructure.item.database.builder.JdbcCursorItemReaderBuilder;
+import org.springframework.batch.infrastructure.item.database.builder.JpaCursorItemReaderBuilder;
 import org.springframework.batch.infrastructure.item.file.FlatFileItemReader;
 import org.springframework.batch.infrastructure.item.file.FlatFileItemWriter;
 import org.springframework.batch.infrastructure.item.file.builder.FlatFileItemReaderBuilder;
@@ -61,6 +63,7 @@ import com.infybuzz.springbatch.service.StudentService;
 import com.infybuzz.springbatch.writer.FirstItemWriter;
 import com.infybuzz.springbatch.writer.SecondItemWriter;
 
+import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -354,5 +357,15 @@ public class SampleJob {
 		adapter.setTargetObject(new StudentService());
 		adapter.setTargetMethod("restCallToCreateStudent");
 		return adapter;
+	}
+
+	@Bean
+	@StepScope
+	JpaCursorItemReader<com.infybuzz.springbatch.entity.postgresql.Student> jpaCursorItemReaderStudent(@Qualifier("postgres") EntityManagerFactory entityManagerFactory) {
+		return new JpaCursorItemReaderBuilder<com.infybuzz.springbatch.entity.postgresql.Student>()
+			.saveState(false)
+			.entityManagerFactory(entityManagerFactory)
+			.queryString("FROM Student")
+			.build();
 	}
 }
