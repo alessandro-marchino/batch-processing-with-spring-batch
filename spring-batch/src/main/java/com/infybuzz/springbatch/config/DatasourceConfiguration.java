@@ -35,4 +35,16 @@ public class DatasourceConfiguration {
     DataSource universityDataSource(@Qualifier("university") DataSourceProperties properties) {
 		return properties.initializeDataSourceBuilder().build();
 	}
+
+	@Bean
+	@Qualifier("postgres")
+	@ConfigurationProperties("spring.datasource.postgres")
+	DataSourceProperties postgresDataSourceProperties() {
+		return new DataSourceProperties();
+	}
+	@Bean
+	@Qualifier("postgres")
+    DataSource postgresDataSource(@Qualifier("postgres") DataSourceProperties properties) {
+		return properties.initializeDataSourceBuilder().build();
+	}
 }

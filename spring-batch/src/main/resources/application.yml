@@ -8,6 +8,10 @@ spring:
       url: jdbc:mysql://localhost:3306/university?useSSL=false&allowPublicKeyRetrieval=true
       username: university
       password: password
+    postgres:
+      url: jdbc:postgres://localhost:5432/university
+      username: university
+      password: password
 
   main:
     web-application-type: none
